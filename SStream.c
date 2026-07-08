@@ -496,6 +496,24 @@ void printInt32HexOffset(SStream *ss, int32_t val)
 	}
 }
 
+// Print a signed displacement in Motorola hex syntax: "$abcd" when
+// non-negative, "-$abcd" otherwise. INT32_MIN has no representable positive
+// counterpart, so its magnitude is formed without negating it, unlike abs().
+void printInt32DispHex(SStream *ss, int32_t val)
+{
+	assert(ss);
+	SSTREAM_RETURN_IF_CLOSED(ss);
+	if (val >= 0) {
+		SStream_concat(ss, "$%" PRIx32, val);
+	} else {
+		if (val == INT32_MIN)
+			SStream_concat(ss, "-$%" PRIx32,
+				       (uint32_t)INT32_MAX + 1);
+		else
+			SStream_concat(ss, "-$%" PRIx32, (int32_t)-val);
+	}
+}
+
 void printInt32Hex(SStream *ss, int32_t val)
 {
 	assert(ss);

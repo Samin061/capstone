@@ -287,9 +287,7 @@ static void printBaseDisp(SStream *O, unsigned int pc, const cs_m68k_op *op)
 	if (is_pc) {
 		SStream_concat(O, "$%" PRIx32, pc + 2 + op->mem.in_disp);
 	} else if (op->mem.in_disp != 0) {
-		SStream_concat(O, "%s$%" PRIx32,
-			       op->mem.in_disp >= 0 ? "" : "-",
-			       abs(op->mem.in_disp));
+		printInt32DispHex(O, op->mem.in_disp);
 	}
 
 	SStream_concat0(O, "(");
@@ -326,9 +324,7 @@ static void printMemIndirect(SStream *O, unsigned int pc, const cs_m68k_op *op)
 	if (is_pc) {
 		SStream_concat(O, "$%" PRIx32, pc + 2 + op->mem.in_disp);
 	} else if (op->mem.in_disp != 0) {
-		SStream_concat(O, "%s$%" PRIx32,
-			       op->mem.in_disp >= 0 ? "" : "-",
-			       abs(op->mem.in_disp));
+		printInt32DispHex(O, op->mem.in_disp);
 	}
 
 	if (op->mem.base_reg != M68K_REG_INVALID) {
@@ -353,9 +349,8 @@ static void printMemIndirect(SStream *O, unsigned int pc, const cs_m68k_op *op)
 		SStream_concat0(O, "]");
 
 	if (op->mem.out_disp != 0) {
-		SStream_concat(O, ",%s%s$%" PRIx32, s_spacing,
-			       op->mem.out_disp >= 0 ? "" : "-",
-			       abs(op->mem.out_disp));
+		SStream_concat(O, ",%s", s_spacing);
+		printInt32DispHex(O, op->mem.out_disp);
 	}
 
 	SStream_concat0(O, ")");

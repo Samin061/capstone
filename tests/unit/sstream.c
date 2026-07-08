@@ -282,6 +282,35 @@ bool test_printint32_bang()
 	return true;
 }
 
+bool test_printint32_disphex()
+{
+	printf("Test test_printint32_disphex\n");
+
+	SStream OS = { 0 };
+	SStream_Init(&OS);
+	printInt32DispHex(&OS, 0);
+	CHECK_OS_EQUAL_RET_FALSE(OS, "$0");
+	SStream_Flush(&OS, NULL);
+
+	printInt32DispHex(&OS, 0x1f);
+	CHECK_OS_EQUAL_RET_FALSE(OS, "$1f");
+	SStream_Flush(&OS, NULL);
+
+	printInt32DispHex(&OS, -0x1f);
+	CHECK_OS_EQUAL_RET_FALSE(OS, "-$1f");
+	SStream_Flush(&OS, NULL);
+
+	printInt32DispHex(&OS, INT32_MAX);
+	CHECK_OS_EQUAL_RET_FALSE(OS, "$7fffffff");
+	SStream_Flush(&OS, NULL);
+
+	// INT32_MIN has no representable positive counterpart; abs() would be UB.
+	printInt32DispHex(&OS, INT32_MIN);
+	CHECK_OS_EQUAL_RET_FALSE(OS, "-$80000000");
+	SStream_Flush(&OS, NULL);
+	return true;
+}
+
 bool test_printint64_bang()
 {
 	printf("Test test_printint64Bang\n");
@@ -713,6 +742,7 @@ int main()
 	result &= test_printint32();
 	result &= test_printint64();
 	result &= test_printint32_bang();
+	result &= test_printint32_disphex();
 	result &= test_printint64_bang();
 	result &= test_printuint8();
 	result &= test_printuint16();
